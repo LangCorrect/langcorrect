@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import { siteConfig } from "@/config/site";
+import Navbar from "@/components/navbar";
 import "./globals.css";
 
 const openSans = Open_Sans({
     subsets: ["latin"],
-    variable: "--font-open-sans",
 });
 
 export const metadata: Metadata = {
@@ -23,8 +23,9 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body className={`${openSans.variable} antialiased`}>
+        <html lang="en" data-theme="dark">
+            <body className={`${openSans.className} antialiased`}>
+                <Navbar />
                 {children}
             </body>
         </html>

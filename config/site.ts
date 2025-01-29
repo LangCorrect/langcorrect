@@ -29,3 +29,5 @@ export const siteConfig = {
 };
 
 export type SiteConfig = typeof siteConfig;
+
+export const themes = ["default", "light", "dark", "retro"];
