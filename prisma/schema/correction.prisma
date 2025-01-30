@@ -1,0 +1,54 @@
+enum CorrectionType {
+    PERFECT
+    CORRECTED
+}
+
+model PostUserCorrection {
+    id                      Int                       @unique @default(autoincrement()) // TODO: deprecate
+    uuid                    String                    @id @default(uuid()) @db.Uuid
+    createdAt               DateTime                  @default(now())
+    updatedAt               DateTime                  @updatedAt
+    authorId                String                    @db.Uuid
+    author                  User                      @relation(fields: [authorId], references: [uuid])
+    postId                  String                    @db.Uuid
+    post                    Post                      @relation(fields: [postId], references: [uuid])
+    feedback                String?
+    postCorrection          PostRowCorrection[]
+    postUserCorrectionReply PostUserCorrectionReply[]
+
+    @@unique([authorId, postId])
+}
+
+model PostRowCorrection {
+    id                      Int                       @unique @default(autoincrement()) // TODO: deprecate
+    uuid                    String                    @id @default(uuid()) @db.Uuid
+    createdAt               DateTime                  @default(now())
+    updatedAt               DateTime                  @updatedAt
+    postRowId               String                    @db.Uuid
+    postRow                 PostRow                   @relation(fields: [postRowId], references: [uuid])
+    postUserCorrectionId    String                    @db.Uuid
+    postUserCorrection      PostUserCorrection        @relation(fields: [postUserCorrectionId], references: [uuid])
+    text                    String?                   @db.Text
+    note                    String?                   @db.Text
+    type                    CorrectionType
+    postUserCorrectionReply PostUserCorrectionReply[]
+
+    @@unique([postRowId, postUserCorrectionId])
+}
+
+model PostUserCorrectionReply {
+    id                   Int                       @unique @default(autoincrement()) // TODO: deprecate
+    uuid                 String                    @id @default(uuid()) @db.Uuid
+    createdAt            DateTime                  @default(now())
+    updatedAt            DateTime                  @updatedAt
+    text                 String                    @db.Text
+    authorId             String                    @db.Uuid
+    author               User                      @relation(fields: [authorId], references: [uuid])
+    postUserCorrectionId String                    @db.Uuid
+    postUserCorrection   PostUserCorrection        @relation(fields: [postUserCorrectionId], references: [uuid])
+    postRowCorrectionId  String                    @db.Uuid
+    postRowCorrection    PostRowCorrection         @relation(fields: [postRowCorrectionId], references: [uuid])
+    parentReplyId        String?                   @db.Uuid
+    parentReply          PostUserCorrectionReply?  @relation("Replies", fields: [parentReplyId], references: [uuid])
+    replies              PostUserCorrectionReply[] @relation("Replies")
+}

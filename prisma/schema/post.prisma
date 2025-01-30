@@ -1,0 +1,50 @@
+enum PostVisibility {
+    PUBLIC
+    MEMBERS
+    FRIENDS
+    PRIVATE
+}
+
+enum PostStatus {
+    DRAFT
+    PUBLISHED
+}
+
+model Post {
+    uuid               String               @id @default(uuid()) @db.Uuid
+    createdAt          DateTime             @default(now())
+    updatedAt          DateTime             @updatedAt
+    authorId           String               @db.Uuid
+    author             User                 @relation(fields: [authorId], references: [uuid])
+    languageId         String               @db.Uuid
+    language           Language             @relation(fields: [languageId], references: [uuid])
+    slug               String               @unique
+    title              String               @db.VarChar(255)
+    text               String               @db.Text
+    nativeText         String?              @db.Text
+    genderOfNarration  Gender               @default(UNKNOWN)
+    visibility         PostVisibility       @default(PUBLIC)
+    status             PostStatus           @default(DRAFT)
+    level              Proficiency          @default(A1)
+    promptId           String?              @db.Uuid
+    prompt             Prompt?              @relation(fields: [promptId], references: [uuid])
+    isCorrected        Boolean              @default(false)
+    postRow            PostRow[]
+    postUserCorrection PostUserCorrection[]
+    PostTag            PostTag[]
+}
+
+model PostRow {
+    id                Int                 @unique @default(autoincrement())
+    uuid              String              @id @default(uuid()) @db.Uuid
+    createdAt         DateTime            @default(now())
+    updatedAt         DateTime            @updatedAt
+    authorId          String              @db.Uuid
+    author            User                @relation(fields: [authorId], references: [uuid])
+    postId            String              @db.Uuid
+    post              Post                @relation(fields: [postId], references: [uuid])
+    sentence          String
+    isVisible         Boolean             @default(true)
+    order             Int                 @default(0)
+    postRowCorrection PostRowCorrection[]
+}
