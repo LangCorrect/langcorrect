@@ -5,6 +5,7 @@ import { ModelTypes } from "./types";
 const DATA_PATHS: { model: ModelTypes; path: string }[] = [
     { model: "language", path: "sensative/data/languages.json" },
     { model: "user", path: "sensative/data/users.json" },
+    { model: "user-language", path: "sensative/data/user-languages.json" },
 ];
 
 async function migrate() {
