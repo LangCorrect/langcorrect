@@ -1,4 +1,10 @@
-import { Language, User, UserFollow, UserLanguage } from "@prisma/client";
+import {
+    Challenge,
+    Language,
+    User,
+    UserFollow,
+    UserLanguage,
+} from "@prisma/client";
 
 export type ModelTypes =
     | "language"
@@ -51,4 +57,17 @@ export type DjangoFollower = {
     updated_at: UserFollow["updatedAt"];
     follower_id: User["uuid"];
     following_id: User["uuid"];
+};
+
+export type DjangoChallenge = {
+    uuid: Challenge["uuid"];
+    created_at: Challenge["createdAt"];
+    updated_at: Challenge["updatedAt"];
+    title: Challenge["title"];
+    description: Challenge["description"];
+    url: Challenge["url"];
+    start_date: Challenge["startDate"];
+    end_date: Challenge["endDate"];
+    old_slug: Challenge["oldSlug"];
+    status: Challenge["status"];
 };

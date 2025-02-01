@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import {
+    DjangoChallenge,
     DjangoFollower,
     DjangoLanguage,
     DjangoUser,
@@ -14,9 +15,7 @@ const modelToFunction: Record<ModelTypes, Function> = {
     user: addUsers,
     "user-language": addUserLanguages,
     follower: addFollowers,
-    challenge: () => {
-        throw new Error("Challenge migration not implemented yet.");
-    },
+    challenge: addChallenges,
     prompt: () => {
         throw new Error("Prompt migration not implemented yet.");
     },
@@ -118,5 +117,24 @@ async function addFollowers(objs: DjangoFollower[]) {
             followingId: obj.following_id,
         })),
         "followers"
+    );
+}
+
+async function addChallenges(objs: DjangoChallenge[]) {
+    await batchInsert(
+        prisma.challenge,
+        objs.map((obj) => ({
+            uuid: obj.uuid,
+            createdAt: obj.created_at,
+            updatedAt: obj.updated_at,
+            title: obj.title,
+            description: obj.description,
+            url: obj.url,
+            startDate: obj.start_date,
+            endDate: obj.end_date,
+            oldSlug: obj.old_slug,
+            status: obj.status,
+        })),
+        "challenges"
     );
 }
