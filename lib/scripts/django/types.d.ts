@@ -1,4 +1,4 @@
-import { Language } from "@prisma/client";
+import { Language, User } from "@prisma/client";
 
 export type ModelTypes =
     | "language"
@@ -18,4 +18,20 @@ export type DjangoLanguage = {
     name: Language["name"];
     code: Language["code"];
     family_code: Language["familyCode"];
+};
+
+export type DjangoUser = {
+    uuid: User["uuid"];
+    created_at: User["createdAt"];
+    updated_at: User["updatedAt"];
+    last_login: User["lastLogin"];
+    password: User["password"];
+    username: User["username"];
+    first_name: User["firstName"];
+    last_name: User["lastName"];
+    email: User["email"];
+    gender: User["gender"];
+    bio: User["bio"];
+    staff_notes?: User["staffNote"];
+    role: User["role"];
 };

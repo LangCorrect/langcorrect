@@ -1,13 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import { DjangoLanguage, ModelTypes } from "./types";
+import { DjangoLanguage, DjangoUser, ModelTypes } from "./types";
 
 const prisma = new PrismaClient();
 
 const modelToFunction: Record<ModelTypes, Function> = {
     language: addLanguages,
-    user: () => {
-        throw new Error("User migration not implemented yet.");
-    },
+    user: addUsers,
     "user-language": () => {
         throw new Error("User language migration not implemented yet.");
     },
@@ -67,5 +65,27 @@ async function addLanguages(objs: DjangoLanguage[]) {
             familyCode: obj.family_code,
         })),
         "languages"
+    );
+}
+
+async function addUsers(objs: DjangoUser[]) {
+    await batchInsert(
+        prisma.user,
+        objs.map((obj) => ({
+            uuid: obj.uuid,
+            createdAt: obj.created_at,
+            updatedAt: obj.updated_at,
+            lastLogin: obj.last_login,
+            password: obj.password,
+            username: obj.username,
+            firstName: obj.first_name,
+            lastName: obj.last_name,
+            email: obj.email,
+            gender: obj.gender,
+            bio: obj.bio,
+            staffNote: obj.staff_notes,
+            role: obj.role,
+        })),
+        "users"
     );
 }
