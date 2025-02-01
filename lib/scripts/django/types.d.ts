@@ -1,6 +1,7 @@
 import {
     Challenge,
     Language,
+    Prompt,
     User,
     UserFollow,
     UserLanguage,
@@ -70,4 +71,17 @@ export type DjangoChallenge = {
     end_date: Challenge["endDate"];
     old_slug: Challenge["oldSlug"];
     status: Challenge["status"];
+};
+
+export type DjangoPrompt = {
+    uuid: Prompt["uuid"];
+    created_at: Prompt["createdAt"];
+    updated_at: Prompt["updatedAt"];
+    text: Prompt["text"];
+    proficiency: Prompt["level"];
+    challenge_id: Challenge["uuid"];
+    author_id: User["uuid"];
+    tags: string[];
+    old_slug: Prompt["oldSlug"];
+    language_id: Language["uuid"];
 };

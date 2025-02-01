@@ -3,6 +3,7 @@ import {
     DjangoChallenge,
     DjangoFollower,
     DjangoLanguage,
+    DjangoPrompt,
     DjangoUser,
     DjangoUserLanguage,
     ModelTypes,
@@ -16,9 +17,7 @@ const modelToFunction: Record<ModelTypes, Function> = {
     "user-language": addUserLanguages,
     follower: addFollowers,
     challenge: addChallenges,
-    prompt: () => {
-        throw new Error("Prompt migration not implemented yet.");
-    },
+    prompt: addPrompts,
     post: () => {
         throw new Error("Post migration not implemented yet.");
     },
@@ -137,4 +136,65 @@ async function addChallenges(objs: DjangoChallenge[]) {
         })),
         "challenges"
     );
+}
+
+async function addPrompts(objs: DjangoPrompt[]) {
+    await batchInsert(
+        prisma.prompt,
+        objs.map((obj) => ({
+            uuid: obj.uuid,
+            createdAt: obj.created_at,
+            updatedAt: obj.updated_at,
+            oldSlug: obj.old_slug,
+            text: obj.text,
+            level: obj.proficiency,
+            languageId: obj.language_id,
+            challengeId: obj.challenge_id,
+            authorId: obj.author_id,
+        })),
+        "prompts"
+    );
+
+    const tagMap = await addTags(objs.flatMap((obj) => obj.tags));
+
+    await batchInsert(
+        prisma.promptTag,
+        objs.flatMap((obj) =>
+            obj.tags.map((tag) => ({
+                tagId: tagMap.get(tag.toLowerCase())!,
+                promptId: obj.uuid,
+            }))
+        ),
+        "prompt tags"
+    );
+}
+
+async function addTags(tags: string[]) {
+    const uniqueTags = Array.from(
+        new Set(tags.map((tag) => tag.toLowerCase()))
+    );
+
+    const existingTags = await prisma.tag.findMany({
+        where: { name: { in: uniqueTags } },
+        select: { uuid: true, name: true },
+    });
+
+    const existingTagMap = new Map(
+        existingTags.map((tag) => [tag.name, tag.uuid])
+    );
+
+    const newTags = uniqueTags
+        .filter((tag) => !existingTagMap.has(tag))
+        .map((tag) => ({ name: tag }));
+
+    if (newTags.length > 0) {
+        await prisma.tag.createMany({ data: newTags, skipDuplicates: true });
+    }
+
+    const allTags = await prisma.tag.findMany({
+        where: { name: { in: uniqueTags } },
+        select: { uuid: true, name: true },
+    });
+
+    return new Map(allTags.map((tag) => [tag.name, tag.uuid]));
 }

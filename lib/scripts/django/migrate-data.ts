@@ -8,6 +8,7 @@ const DATA_PATHS: { model: ModelTypes; path: string }[] = [
     { model: "user-language", path: "sensative/data/user-languages.json" },
     { model: "follower", path: "sensative/data/followers.json" },
     { model: "challenge", path: "sensative/data/challenges.json" },
+    { model: "prompt", path: "sensative/data/prompts.json" },
 ];
 
 async function migrate() {
