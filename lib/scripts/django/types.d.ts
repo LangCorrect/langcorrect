@@ -1,4 +1,4 @@
-import { Language, User, UserLanguage } from "@prisma/client";
+import { Language, User, UserFollow, UserLanguage } from "@prisma/client";
 
 export type ModelTypes =
     | "language"
@@ -43,4 +43,12 @@ export type DjangoUserLanguage = {
     userId: UserLanguage["userId"];
     languageId: UserLanguage["languageId"];
     level: UserLanguage["level"];
+};
+
+export type DjangoFollower = {
+    uuid: UserFollow["uuid"];
+    created_at: UserFollow["createdAt"];
+    updated_at: UserFollow["updatedAt"];
+    follower_id: User["uuid"];
+    following_id: User["uuid"];
 };

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import {
+    DjangoFollower,
     DjangoLanguage,
     DjangoUser,
     DjangoUserLanguage,
@@ -12,9 +13,7 @@ const modelToFunction: Record<ModelTypes, Function> = {
     language: addLanguages,
     user: addUsers,
     "user-language": addUserLanguages,
-    follower: () => {
-        throw new Error("Follower migration not implemented yet.");
-    },
+    follower: addFollowers,
     challenge: () => {
         throw new Error("Challenge migration not implemented yet.");
     },
@@ -105,5 +104,19 @@ async function addUserLanguages(objs: DjangoUserLanguage[]) {
             level: obj.level,
         })),
         "user languages"
+    );
+}
+
+async function addFollowers(objs: DjangoFollower[]) {
+    await batchInsert(
+        prisma.userFollow,
+        objs.map((obj) => ({
+            uuid: obj.uuid,
+            createdAt: obj.created_at,
+            updatedAt: obj.updated_at,
+            followerId: obj.follower_id,
+            followingId: obj.following_id,
+        })),
+        "followers"
     );
 }
