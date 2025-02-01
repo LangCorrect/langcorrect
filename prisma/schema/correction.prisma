@@ -32,6 +32,7 @@ model PostRowCorrection {
     note                    String?                   @db.Text
     type                    CorrectionType
     postUserCorrectionReply PostUserCorrectionReply[]
+    tags                    CorrectionTag[]
 
     @@unique([postRowId, postUserCorrectionId])
 }
@@ -46,8 +47,8 @@ model PostUserCorrectionReply {
     author               User                      @relation(fields: [authorId], references: [uuid])
     postUserCorrectionId String                    @db.Uuid
     postUserCorrection   PostUserCorrection        @relation(fields: [postUserCorrectionId], references: [uuid])
-    postRowCorrectionId  String                    @db.Uuid
-    postRowCorrection    PostRowCorrection         @relation(fields: [postRowCorrectionId], references: [uuid])
+    postRowCorrectionId  String?                   @db.Uuid
+    postRowCorrection    PostRowCorrection?        @relation(fields: [postRowCorrectionId], references: [uuid])
     parentReplyId        String?                   @db.Uuid
     parentReply          PostUserCorrectionReply?  @relation("Replies", fields: [parentReplyId], references: [uuid])
     replies              PostUserCorrectionReply[] @relation("Replies")

@@ -74,7 +74,7 @@ CREATE TABLE "PostUserCorrectionReply" (
     "text" TEXT NOT NULL,
     "authorId" UUID NOT NULL,
     "postUserCorrectionId" UUID NOT NULL,
-    "postRowCorrectionId" UUID NOT NULL,
+    "postRowCorrectionId" UUID,
     "parentReplyId" UUID,
 
     CONSTRAINT "PostUserCorrectionReply_pkey" PRIMARY KEY ("uuid")
@@ -175,6 +175,14 @@ CREATE TABLE "ChallengeTag" (
 );
 
 -- CreateTable
+CREATE TABLE "CorrectionTag" (
+    "postRowCorrectionId" UUID NOT NULL,
+    "tagId" UUID NOT NULL,
+
+    CONSTRAINT "CorrectionTag_pkey" PRIMARY KEY ("postRowCorrectionId","tagId")
+);
+
+-- CreateTable
 CREATE TABLE "User" (
     "uuid" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -221,6 +229,9 @@ CREATE UNIQUE INDEX "Challenge_url_key" ON "Challenge"("url");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Challenge_slug_key" ON "Challenge"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Challenge_oldSlug_key" ON "Challenge"("oldSlug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "PostUserCorrection_id_key" ON "PostUserCorrection"("id");
@@ -292,7 +303,7 @@ ALTER TABLE "PostUserCorrectionReply" ADD CONSTRAINT "PostUserCorrectionReply_au
 ALTER TABLE "PostUserCorrectionReply" ADD CONSTRAINT "PostUserCorrectionReply_postUserCorrectionId_fkey" FOREIGN KEY ("postUserCorrectionId") REFERENCES "PostUserCorrection"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PostUserCorrectionReply" ADD CONSTRAINT "PostUserCorrectionReply_postRowCorrectionId_fkey" FOREIGN KEY ("postRowCorrectionId") REFERENCES "PostRowCorrection"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PostUserCorrectionReply" ADD CONSTRAINT "PostUserCorrectionReply_postRowCorrectionId_fkey" FOREIGN KEY ("postRowCorrectionId") REFERENCES "PostRowCorrection"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PostUserCorrectionReply" ADD CONSTRAINT "PostUserCorrectionReply_parentReplyId_fkey" FOREIGN KEY ("parentReplyId") REFERENCES "PostUserCorrectionReply"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -338,6 +349,12 @@ ALTER TABLE "ChallengeTag" ADD CONSTRAINT "ChallengeTag_challengeId_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "ChallengeTag" ADD CONSTRAINT "ChallengeTag_tagId_fkey" FOREIGN KEY ("tagId") REFERENCES "Tag"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CorrectionTag" ADD CONSTRAINT "CorrectionTag_postRowCorrectionId_fkey" FOREIGN KEY ("postRowCorrectionId") REFERENCES "PostRowCorrection"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CorrectionTag" ADD CONSTRAINT "CorrectionTag_tagId_fkey" FOREIGN KEY ("tagId") REFERENCES "Tag"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserLanguage" ADD CONSTRAINT "UserLanguage_languageId_fkey" FOREIGN KEY ("languageId") REFERENCES "Language"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -31,7 +31,7 @@ model Post {
     isCorrected        Boolean              @default(false)
     postRow            PostRow[]
     postUserCorrection PostUserCorrection[]
-    PostTag            PostTag[]
+    tags               PostTag[]
 }
 
 model PostRow {

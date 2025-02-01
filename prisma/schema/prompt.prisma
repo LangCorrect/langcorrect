@@ -13,5 +13,5 @@ model Prompt {
     authorId    String       @db.Uuid
     author      User         @relation(fields: [authorId], references: [uuid])
     post        Post[]
-    PromptTag   PromptTag[]
+    tags        PromptTag[]
 }

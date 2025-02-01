@@ -1,9 +1,10 @@
 model Tag {
-    uuid          String         @id @default(uuid()) @db.Uuid
-    name          String         @unique @db.VarChar(50)
+    uuid          String          @id @default(uuid()) @db.Uuid
+    name          String          @unique @db.VarChar(50)
     postTags      PostTag[]
     promptTags    PromptTag[]
     challengeTags ChallengeTag[]
+    CorrectionTag CorrectionTag[]
 }
 
 model PostTag {
@@ -31,4 +32,13 @@ model ChallengeTag {
     tag         Tag       @relation(fields: [tagId], references: [uuid])
 
     @@id([challengeId, tagId])
+}
+
+model CorrectionTag {
+    postRowCorrectionId String            @db.Uuid
+    postRowCorrection   PostRowCorrection @relation(fields: [postRowCorrectionId], references: [uuid])
+    tagId               String            @db.Uuid
+    tag                 Tag               @relation(fields: [tagId], references: [uuid])
+
+    @@id([postRowCorrectionId, tagId])
 }
