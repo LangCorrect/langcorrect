@@ -10,6 +10,7 @@ const DATA_PATHS: { model: ModelTypes; path: string }[] = [
     { model: "challenge", path: "sensative/data/challenges.json" },
     { model: "prompt", path: "sensative/data/prompts.json" },
     { model: "post", path: "sensative/data/posts.json" },
+    { model: "post-row", path: "sensative/data/post-rows.json" },
 ];
 
 async function migrate() {

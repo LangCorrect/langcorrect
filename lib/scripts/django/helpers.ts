@@ -4,6 +4,7 @@ import {
     DjangoFollower,
     DjangoLanguage,
     DjangoPost,
+    DjangoPostRow,
     DjangoPrompt,
     DjangoUser,
     DjangoUserLanguage,
@@ -20,9 +21,7 @@ const modelToFunction: Record<ModelTypes, Function> = {
     challenge: addChallenges,
     prompt: addPrompts,
     post: addPosts,
-    "post-row": () => {
-        throw new Error("Post row migration not implemented yet.");
-    },
+    "post-row": addPostRows,
     "post-user-correction": () => {
         throw new Error("Post user correction migration not implemented yet.");
     },
@@ -202,6 +201,23 @@ async function addPosts(objs: DjangoPost[]) {
             }))
         ),
         "post tags"
+    );
+}
+
+async function addPostRows(objs: DjangoPostRow[]) {
+    await batchInsert(
+        prisma.postRow,
+        objs.map((obj) => ({
+            uuid: obj.uuid,
+            createdAt: obj.created_at,
+            updatedAt: obj.updated_at,
+            authorId: obj.author_id,
+            postId: obj.post_id,
+            sentence: obj.sentence,
+            isVisible: obj.is_visible,
+            order: obj.order,
+        })),
+        "post rows"
     );
 }
 

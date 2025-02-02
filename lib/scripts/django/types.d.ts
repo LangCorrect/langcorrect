@@ -1,6 +1,8 @@
 import {
     Challenge,
     Language,
+    Post,
+    PostRow,
     Prompt,
     User,
     UserFollow,
@@ -103,4 +105,15 @@ export type DjangoPost = {
     prompt_id: Prompt["uuid"];
     tags: string[];
     is_corrected: Post["isCorrected"];
+};
+
+export type DjangoPostRow = {
+    uuid: PostRow["uuid"];
+    created_at: PostRow["createdAt"];
+    updated_at: PostRow["updatedAt"];
+    author_id: User["uuid"];
+    post_id: Post["uuid"];
+    sentence: PostRow["sentence"];
+    is_visible: PostRow["isVisible"];
+    order: PostRow["order"];
 };
