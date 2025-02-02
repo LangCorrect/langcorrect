@@ -3,6 +3,7 @@ import {
     DjangoChallenge,
     DjangoFollower,
     DjangoLanguage,
+    DjangoPost,
     DjangoPrompt,
     DjangoUser,
     DjangoUserLanguage,
@@ -18,9 +19,7 @@ const modelToFunction: Record<ModelTypes, Function> = {
     follower: addFollowers,
     challenge: addChallenges,
     prompt: addPrompts,
-    post: () => {
-        throw new Error("Post migration not implemented yet.");
-    },
+    post: addPosts,
     "post-row": () => {
         throw new Error("Post row migration not implemented yet.");
     },
@@ -166,6 +165,43 @@ async function addPrompts(objs: DjangoPrompt[]) {
             }))
         ),
         "prompt tags"
+    );
+}
+
+async function addPosts(objs: DjangoPost[]) {
+    await batchInsert(
+        prisma.post,
+        objs.map((obj) => ({
+            uuid: obj.uuid,
+            createdAt: obj.created_at,
+            updatedAt: obj.updated_at,
+            authorId: obj.author_id,
+            languageId: obj.language_id,
+            slug: obj.slug,
+            title: obj.title,
+            text: obj.text,
+            nativeText: obj.native_text,
+            genderOfNarration: obj.gender_of_narration,
+            visibility: obj.visibility,
+            status: obj.status,
+            level: obj.proficiency,
+            promptId: obj.prompt_id,
+            isCorrected: obj.is_corrected,
+        })),
+        "posts"
+    );
+
+    const tagMap = await addTags(objs.flatMap((obj) => obj.tags));
+
+    await batchInsert(
+        prisma.postTag,
+        objs.flatMap((obj) =>
+            obj.tags.map((tag) => ({
+                tagId: tagMap.get(tag.toLowerCase())!,
+                postId: obj.uuid,
+            }))
+        ),
+        "post tags"
     );
 }
 

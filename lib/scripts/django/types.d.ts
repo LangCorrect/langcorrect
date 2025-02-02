@@ -85,3 +85,22 @@ export type DjangoPrompt = {
     old_slug: Prompt["oldSlug"];
     language_id: Language["uuid"];
 };
+
+export type DjangoPost = {
+    uuid: Post["uuid"];
+    created_at: Post["createdAt"];
+    updated_at: Post["updatedAt"];
+    author_id: User["uuid"];
+    language_id: Language["uuid"];
+    slug: Post["slug"];
+    title: Post["title"];
+    text: Post["text"];
+    native_text: Post["nativeText"];
+    gender_of_narration: Post["genderOfNarration"];
+    visibility: Post["visibility"];
+    status: Post["status"];
+    proficiency: Post["proficiency"];
+    prompt_id: Prompt["uuid"];
+    tags: string[];
+    is_corrected: Post["isCorrected"];
+};
