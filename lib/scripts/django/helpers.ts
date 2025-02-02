@@ -7,11 +7,14 @@ import {
     DjangoPostRow,
     DjangoPostRowCorrection,
     DjangoPostUserCorrection,
+    DjangoPostUserCorrectionReply,
     DjangoPrompt,
     DjangoUser,
     DjangoUserLanguage,
     ModelTypes,
 } from "./types";
+
+const BATCH_SIZE = 50000;
 
 const prisma = new PrismaClient();
 
@@ -26,11 +29,7 @@ const modelToFunction: Record<ModelTypes, Function> = {
     "post-row": addPostRows,
     "post-user-correction": addPostUserCorrections,
     "post-row-correction": addPostRowCorrections,
-    "post-user-correction-reply": () => {
-        throw new Error(
-            "Post user correction reply migration not implemented yet."
-        );
-    },
+    "post-user-correction-reply": addPostUserCorrectionReplies,
 };
 
 export async function migrateData<T>(data: T[], model: ModelTypes) {
@@ -234,8 +233,6 @@ async function addPostUserCorrections(objs: DjangoPostUserCorrection[]) {
     );
 }
 
-const BATCH_SIZE = 50000;
-
 async function addPostRowCorrections(objs: DjangoPostRowCorrection[]) {
     for (let i = 0; i < objs.length; i += BATCH_SIZE) {
         const batch = objs.slice(i, i + BATCH_SIZE);
@@ -271,6 +268,42 @@ async function addPostRowCorrections(objs: DjangoPostRowCorrection[]) {
             }))
         ),
         "post row correction tags"
+    );
+}
+
+async function addPostUserCorrectionReplies(
+    objs: DjangoPostUserCorrectionReply[]
+) {
+    const topLevelReplies = objs.filter((obj) => !obj.parent_reply_id);
+    const childReplies = objs.filter((obj) => obj.parent_reply_id);
+
+    await batchInsert(
+        prisma.postUserCorrectionReply,
+        topLevelReplies.map((obj) => ({
+            uuid: obj.uuid,
+            createdAt: obj.created_at,
+            updatedAt: obj.updated_at,
+            postUserCorrectionId: obj.post_user_correction_id,
+            postRowCorrectionId: obj.post_correction_id,
+            text: obj.text,
+            authorId: obj.author_id,
+        })),
+        "top-level replies"
+    );
+
+    await batchInsert(
+        prisma.postUserCorrectionReply,
+        childReplies.map((obj) => ({
+            uuid: obj.uuid,
+            createdAt: obj.created_at,
+            updatedAt: obj.updated_at,
+            postUserCorrectionId: obj.post_user_correction_id,
+            postRowCorrectionId: obj.post_correction_id,
+            text: obj.text,
+            authorId: obj.author_id,
+            parentReplyId: obj.parent_reply_id,
+        })),
+        "child replies"
     );
 }
 

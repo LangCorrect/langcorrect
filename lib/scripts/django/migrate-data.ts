@@ -19,6 +19,10 @@ const DATA_PATHS: { model: ModelTypes; path: string }[] = [
         model: "post-row-correction",
         path: "sensative/data/post-corrections.json",
     },
+    {
+        model: "post-user-correction-reply",
+        path: "sensative/data/post-user-correction-replies.json",
+    },
 ];
 
 async function migrate() {

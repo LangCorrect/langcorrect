@@ -5,6 +5,7 @@ import {
     PostRow,
     PostRowCorrection,
     PostUserCorrection,
+    PostUserCorrectionReply,
     Prompt,
     User,
     UserFollow,
@@ -139,4 +140,15 @@ export type DjangoPostRowCorrection = {
     note: PostRowCorrection["note"];
     type: PostRowCorrection["type"];
     tags: string[];
+};
+
+export type DjangoPostUserCorrectionReply = {
+    uuid: PostUserCorrectionReply["uuid"];
+    created_at: PostUserCorrectionReply["createdAt"];
+    updated_at: PostUserCorrectionReply["updatedAt"];
+    post_user_correction_id: PostUserCorrection["uuid"];
+    post_correction_id: PostRowCorrection["uuid"];
+    text: PostUserCorrectionReply["text"];
+    parent_reply_id: PostUserCorrectionReply["parentReplyId"];
+    author_id: User["uuid"];
 };
