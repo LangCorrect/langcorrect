@@ -5,6 +5,7 @@ import {
     DjangoLanguage,
     DjangoPost,
     DjangoPostRow,
+    DjangoPostUserCorrection,
     DjangoPrompt,
     DjangoUser,
     DjangoUserLanguage,
@@ -22,9 +23,7 @@ const modelToFunction: Record<ModelTypes, Function> = {
     prompt: addPrompts,
     post: addPosts,
     "post-row": addPostRows,
-    "post-user-correction": () => {
-        throw new Error("Post user correction migration not implemented yet.");
-    },
+    "post-user-correction": addPostUserCorrections,
     "post-row-correction": () => {
         throw new Error("Post row correction migration not implemented yet.");
     },
@@ -218,6 +217,21 @@ async function addPostRows(objs: DjangoPostRow[]) {
             order: obj.order,
         })),
         "post rows"
+    );
+}
+
+async function addPostUserCorrections(objs: DjangoPostUserCorrection[]) {
+    await batchInsert(
+        prisma.postUserCorrection,
+        objs.map((obj) => ({
+            uuid: obj.uuid,
+            createdAt: obj.created_at,
+            updatedAt: obj.updated_at,
+            authorId: obj.author_id,
+            postId: obj.post_id,
+            feedback: obj.feedback,
+        })),
+        "post user corrections"
     );
 }
 

@@ -3,6 +3,7 @@ import {
     Language,
     Post,
     PostRow,
+    PostUserCorrection,
     Prompt,
     User,
     UserFollow,
@@ -116,4 +117,13 @@ export type DjangoPostRow = {
     sentence: PostRow["sentence"];
     is_visible: PostRow["isVisible"];
     order: PostRow["order"];
+};
+
+export type DjangoPostUserCorrection = {
+    uuid: PostUserCorrection["uuid"];
+    created_at: PostUserCorrection["createdAt"];
+    updated_at: PostUserCorrection["updatedAt"];
+    author_id: User["uuid"];
+    post_id: Post["uuid"];
+    feedback: PostUserCorrection["feedback"];
 };
