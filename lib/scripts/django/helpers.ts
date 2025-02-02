@@ -1,10 +1,11 @@
-import { PrismaClient } from "@prisma/client";
+import { CorrectionType, PrismaClient } from "@prisma/client";
 import {
     DjangoChallenge,
     DjangoFollower,
     DjangoLanguage,
     DjangoPost,
     DjangoPostRow,
+    DjangoPostRowCorrection,
     DjangoPostUserCorrection,
     DjangoPrompt,
     DjangoUser,
@@ -24,9 +25,7 @@ const modelToFunction: Record<ModelTypes, Function> = {
     post: addPosts,
     "post-row": addPostRows,
     "post-user-correction": addPostUserCorrections,
-    "post-row-correction": () => {
-        throw new Error("Post row correction migration not implemented yet.");
-    },
+    "post-row-correction": addPostRowCorrections,
     "post-user-correction-reply": () => {
         throw new Error(
             "Post user correction reply migration not implemented yet."
@@ -232,6 +231,46 @@ async function addPostUserCorrections(objs: DjangoPostUserCorrection[]) {
             feedback: obj.feedback,
         })),
         "post user corrections"
+    );
+}
+
+const BATCH_SIZE = 50000;
+
+async function addPostRowCorrections(objs: DjangoPostRowCorrection[]) {
+    for (let i = 0; i < objs.length; i += BATCH_SIZE) {
+        const batch = objs.slice(i, i + BATCH_SIZE);
+
+        await batchInsert(
+            prisma.postRowCorrection,
+            batch.map((obj) => ({
+                uuid: obj.uuid,
+                createdAt: obj.created_at,
+                updatedAt: obj.updated_at,
+                postRowId: obj.post_row_id,
+                postUserCorrectionId: obj.post_user_correction_id,
+                text: obj.text,
+                note: obj.note,
+                type:
+                    // @ts-ignore
+                    obj.type === "perfect"
+                        ? CorrectionType.PERFECT
+                        : CorrectionType.CORRECTED,
+            })),
+            `post row corrections (${i}/${objs.length})`
+        );
+    }
+
+    const tagMap = await addTags(objs.flatMap((obj) => obj.tags));
+
+    await batchInsert(
+        prisma.correctionTag,
+        objs.flatMap((obj) =>
+            obj.tags.map((tag) => ({
+                tagId: tagMap.get(tag.toLowerCase())!,
+                postRowCorrectionId: obj.uuid,
+            }))
+        ),
+        "post row correction tags"
     );
 }
 

@@ -3,6 +3,7 @@ import {
     Language,
     Post,
     PostRow,
+    PostRowCorrection,
     PostUserCorrection,
     Prompt,
     User,
@@ -126,4 +127,16 @@ export type DjangoPostUserCorrection = {
     author_id: User["uuid"];
     post_id: Post["uuid"];
     feedback: PostUserCorrection["feedback"];
+};
+
+export type DjangoPostRowCorrection = {
+    uuid: PostRowCorrection["uuid"];
+    created_at: PostRowCorrection["createdAt"];
+    updated_at: PostRowCorrection["updatedAt"];
+    post_row_id: PostRow["uuid"];
+    post_user_correction_id: PostUserCorrection["uuid"];
+    text: PostRowCorrection["text"];
+    note: PostRowCorrection["note"];
+    type: PostRowCorrection["type"];
+    tags: string[];
 };
