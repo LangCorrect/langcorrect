@@ -1,0 +1,17 @@
+model Prompt {
+    uuid        String       @id @default(uuid()) @db.Uuid
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+    slug        String       @unique @default(nanoid(6))
+    oldSlug     String?      @unique // TODO: deprecate
+    text        String       @db.Text
+    level       Proficiency?
+    languageId  String       @db.Uuid
+    language    Language     @relation(fields: [languageId], references: [uuid])
+    challengeId String?      @db.Uuid
+    challenge   Challenge?   @relation(fields: [challengeId], references: [uuid])
+    authorId    String       @db.Uuid
+    author      User         @relation(fields: [authorId], references: [uuid])
+    post        Post[]
+    tags        PromptTag[]
+}

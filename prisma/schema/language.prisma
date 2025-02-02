@@ -1,0 +1,9 @@
+model Language {
+    uuid         String         @id @default(uuid()) @db.Uuid
+    name         String         @unique @db.VarChar(50)
+    code         String         @unique @db.VarChar(10)
+    familyCode   String         @db.VarChar(10)
+    userLanguage UserLanguage[]
+    prompt       Prompt[]
+    post         Post[]
+}

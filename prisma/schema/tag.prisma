@@ -1,0 +1,44 @@
+model Tag {
+    uuid          String          @id @default(uuid()) @db.Uuid
+    name          String          @unique @db.VarChar(50)
+    postTags      PostTag[]
+    promptTags    PromptTag[]
+    challengeTags ChallengeTag[]
+    CorrectionTag CorrectionTag[]
+}
+
+model PostTag {
+    postId String @db.Uuid
+    post   Post   @relation(fields: [postId], references: [uuid])
+    tagId  String @db.Uuid
+    tag    Tag    @relation(fields: [tagId], references: [uuid])
+
+    @@id([postId, tagId])
+}
+
+model PromptTag {
+    promptId String @db.Uuid
+    prompt   Prompt @relation(fields: [promptId], references: [uuid])
+    tagId    String @db.Uuid
+    tag      Tag    @relation(fields: [tagId], references: [uuid])
+
+    @@id([promptId, tagId])
+}
+
+model ChallengeTag {
+    challengeId String    @db.Uuid
+    challenge   Challenge @relation(fields: [challengeId], references: [uuid])
+    tagId       String    @db.Uuid
+    tag         Tag       @relation(fields: [tagId], references: [uuid])
+
+    @@id([challengeId, tagId])
+}
+
+model CorrectionTag {
+    postRowCorrectionId String            @db.Uuid
+    postRowCorrection   PostRowCorrection @relation(fields: [postRowCorrectionId], references: [uuid])
+    tagId               String            @db.Uuid
+    tag                 Tag               @relation(fields: [tagId], references: [uuid])
+
+    @@id([postRowCorrectionId, tagId])
+}
