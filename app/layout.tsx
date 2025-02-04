@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import { siteConfig } from "@/config/site";
+import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import "./globals.css";
 
@@ -24,9 +25,12 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" data-theme="dracula">
-            <body className={`${openSans.className} antialiased`}>
+            <body
+                className={`${openSans.className} antialiased bg-base-200 flex flex-col h-screen`}
+            >
                 <Navbar />
-                {children}
+                <div className="grow">{children}</div>
+                <Footer />
             </body>
         </html>
     );
