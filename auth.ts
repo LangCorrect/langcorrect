@@ -1,44 +1,63 @@
+import { Role } from "@prisma/client";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { getUserByEmail } from "./data/users";
+import { UserNotFoundError } from "./lib/errors";
+import { verifyPassword } from "./lib/password-utils";
+import { LoginFormSchema } from "./lib/schemas/auth";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-    debug: true, // TODO: remove
+    pages: {
+        signIn: "/login",
+    },
     providers: [
         Credentials({
             credentials: {
                 email: {},
                 password: {},
             },
-            authorize: async (credentials) => {
-                console.log("🚀 ~ authorize: ~ credentials:", credentials);
-                let user = null;
+            authorize: async (rawCredentials) => {
+                const validatedFields =
+                    LoginFormSchema.safeParse(rawCredentials);
 
-                const isCorrectPassword = true;
-                if (isCorrectPassword) {
-                    user = {
-                        id: "1",
-                        name: "John Doe",
-                        email: "example@example.com",
-                        image: "https://picsum.photos/200",
-                    };
+                if (validatedFields.success) {
+                    const { email, password } = validatedFields.data;
+
+                    const user = await getUserByEmail(email);
+                    if (!user) throw new UserNotFoundError();
+
+                    const isCorrectPassword = await verifyPassword(
+                        user.password,
+                        password
+                    );
+
+                    if (isCorrectPassword) {
+                        return {
+                            id: user.uuid,
+                            username: user.username,
+                            role: user.role,
+                        };
+                    }
                 }
-
-                return user;
+                return null;
             },
         }),
     ],
     callbacks: {
         jwt: ({ token, user }) => {
-            console.log("/===== Inside of jwt callback =====/");
-            console.log("🚀 ~ user:", user);
-            console.log("🚀 ~ token:", token);
-
+            if (user) {
+                token.id = user.id;
+                token.username = user.username;
+                token.role = user.role;
+            }
             return token;
         },
         session: ({ session, token }) => {
-            console.log("/===== Inside of session callback =====/");
-            console.log("🚀 ~ session:", session);
-            console.log("🚀 ~ token:", token);
+            if (token) {
+                session.user.id = token.id as string;
+                session.user.username = token.username as string;
+                session.user.role = token.role as Role;
+            }
 
             return session;
         },

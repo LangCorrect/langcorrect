@@ -1,13 +1,10 @@
 import Link from "next/link";
-import { signOut } from "@/auth";
+import { logout } from "@/actions/auth";
 import { FaRightFromBracket } from "react-icons/fa6";
 
 function LoginButton() {
     return (
-        <Link
-            href="/api/auth/signin"
-            className="btn btn-sm btn-secondary rounded"
-        >
+        <Link href="/login" className="btn btn-sm btn-secondary rounded">
             Login
         </Link>
     );
@@ -15,13 +12,7 @@ function LoginButton() {
 
 function SignoutButton() {
     return (
-        <form
-            className="flex gap-2 "
-            action={async () => {
-                "use server";
-                await signOut();
-            }}
-        >
+        <form className="flex gap-2" action={logout}>
             <FaRightFromBracket />
             <button type="submit" className="cursor-pointer">
                 Logout
