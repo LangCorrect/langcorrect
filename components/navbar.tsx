@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/data/users";
 import {
     FaChessKnight,
     FaCircleCheck,
@@ -104,8 +104,12 @@ export function NavLink({
 }
 
 export default async function Navbar() {
-    const session = await auth();
-    const isLoggedIn = session !== null && session.user !== null;
+    const currentUser = await getCurrentUser();
+    const isLoggedIn = currentUser && currentUser?.username;
+
+    const initials =
+        isLoggedIn &&
+        currentUser?.username.split("").slice(0, 2).join("").toUpperCase();
 
     return (
         <div className="navbar bg-base-100 shadow-sm px-6">
@@ -187,7 +191,7 @@ export default async function Navbar() {
                         >
                             <div className="avatar avatar-placeholder">
                                 <div className="bg-neutral text-neutral-content w-10 rounded-full">
-                                    <span>{/* TODO:  */} DZ</span>
+                                    <span>{initials}</span>
                                 </div>
                             </div>
                         </div>
