@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/data/users";
+import { getCurrentUser } from "@/features/auth/data";
 import {
     FaChessKnight,
     FaCircleCheck,

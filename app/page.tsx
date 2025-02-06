@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/data/users";
+import { getCurrentUser } from "@/features/auth/data";
 
 export default async function HomePage() {
     const currentUser = await getCurrentUser();

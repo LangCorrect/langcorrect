@@ -1,9 +1,9 @@
 "use server";
 
 import { signIn, signOut } from "@/auth";
+import { LoginFormSchema } from "@/features/auth/schema";
+import { LoginFormState } from "@/features/auth/types";
 import { AuthError } from "next-auth";
-import { LoginFormState } from "@/types/auth";
-import { LoginFormSchema } from "@/lib/schemas/auth";
 
 export async function login(state: LoginFormState, rawFormData: FormData) {
     const validatedFields = LoginFormSchema.safeParse({

@@ -1,10 +1,10 @@
+import { LoginFormSchema } from "@/features/auth/schema";
+import { getUser } from "@/features/users/data";
 import { Role } from "@prisma/client";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { getUserByEmail } from "./data/users";
 import { UserNotFoundError } from "./lib/errors";
 import { verifyPassword } from "./lib/password-utils";
-import { LoginFormSchema } from "./lib/schemas/auth";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     pages: {
@@ -23,7 +23,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 if (validatedFields.success) {
                     const { email, password } = validatedFields.data;
 
-                    const user = await getUserByEmail(email);
+                    const user = await getUser(email);
                     if (!user) throw new UserNotFoundError();
 
                     const isCorrectPassword = await verifyPassword(
