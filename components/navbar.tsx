@@ -1,31 +1,50 @@
 import Link from "next/link";
+import { getCurrentUser } from "@/features/auth/data";
+import {
+    FaChessKnight,
+    FaCircleCheck,
+    FaGear,
+    FaHouse,
+    FaLightbulb,
+    FaNewspaper,
+    FaPen,
+    FaThumbsUp,
+    FaUser,
+} from "react-icons/fa6";
 import { siteConfig } from "@/config/site";
-import ThemeController from "./theme-controller";
+import { LoginButton, SignoutButton } from "./button";
 
 const links = [
     {
         label: "Home",
         href: "/",
+        icon: <FaHouse />,
     },
     {
         label: "Posts",
         href: "/posts",
+        icon: <FaNewspaper />,
     },
     {
         label: "Prompts",
         href: "/prompts",
+        icon: <FaLightbulb />,
     },
     {
         label: "Corrections",
         href: "/corrections",
+        icon: <FaCircleCheck />,
     },
     {
         label: "Challenges",
         href: "/challenges",
+        icon: <FaChessKnight />,
     },
     {
         label: "Socials",
         href: "#",
+        icon: <FaThumbsUp />,
+        disabled: true,
         subMenuItems: [
             {
                 label: "Twitter",
@@ -44,13 +63,26 @@ const links = [
 interface NavLinkProps {
     label: string;
     href: string;
+    icon: React.ReactElement;
+    disabled?: boolean;
     subMenuItems?: { label: string; href: string; isExternal: boolean }[];
 }
 
-export function NavLink({ label, href, subMenuItems }: NavLinkProps) {
+export function NavLink({
+    label,
+    href,
+    icon,
+    disabled,
+    subMenuItems,
+}: NavLinkProps) {
     return (
         <li key={label}>
-            <Link href={href}>{label}</Link>
+            <Link
+                href={href}
+                className={disabled ? "pointer-events-none" : undefined}
+            >
+                {icon} {label}
+            </Link>
             {subMenuItems !== undefined && (
                 <ul className="p-2">
                     {subMenuItems?.map(({ label, href, isExternal }) => {
@@ -71,7 +103,14 @@ export function NavLink({ label, href, subMenuItems }: NavLinkProps) {
     );
 }
 
-export default function Navbar() {
+export default async function Navbar() {
+    const currentUser = await getCurrentUser();
+    const isLoggedIn = currentUser && currentUser?.username;
+
+    const initials =
+        isLoggedIn &&
+        currentUser?.username.split("").slice(0, 2).join("").toUpperCase();
+
     return (
         <div className="navbar bg-base-100 shadow-sm px-6">
             <div className="navbar-start">
@@ -108,54 +147,78 @@ export default function Navbar() {
             <div className="navbar-center hidden lg:flex">
                 <ul className="menu menu-horizontal px-1">
                     <li>
-                        <Link href="/">Home</Link>
+                        <Link href="/">
+                            <FaHouse />
+                            Home
+                        </Link>
                     </li>
                     <li>
-                        <Link href="/posts">Posts</Link>
+                        <Link href="/posts">
+                            <FaNewspaper />
+                            Posts
+                        </Link>
                     </li>
                     <li>
-                        <Link href="/prompts">Prompts</Link>
+                        <Link href="/prompts">
+                            <FaLightbulb />
+                            Prompts
+                        </Link>
                     </li>
                     <li>
-                        <Link href="/corrections">Corrections</Link>
+                        <Link href="/corrections">
+                            <FaCircleCheck />
+                            Corrections
+                        </Link>
                     </li>
                     <li>
-                        <Link href="/challenges">Challenges</Link>
+                        <Link href="/challenges">
+                            <FaChessKnight />
+                            Challenges
+                        </Link>
                     </li>
                 </ul>
             </div>
             <div className="navbar-end gap-3">
-                <ThemeController />
-                <button className="btn btn-sm rounded-full btn-primary">
-                    Write
+                <button className="btn btn-sm btn-accent rounded">
+                    <FaPen /> Write
                 </button>
-                <div className="dropdown dropdown-end">
-                    <div
-                        tabIndex={0}
-                        role="button"
-                        className="btn btn-sm btn-ghost btn-circle"
-                    >
-                        <div className="avatar avatar-placeholder">
-                            <div className="bg-neutral text-neutral-content w-10 rounded-full">
-                                <span>DZ</span>
+                {isLoggedIn ? (
+                    <div className="dropdown dropdown-end">
+                        <div
+                            tabIndex={0}
+                            role="button"
+                            className="btn btn-sm btn-ghost btn-circle"
+                        >
+                            <div className="avatar avatar-placeholder">
+                                <div className="bg-neutral text-neutral-content w-10 rounded-full">
+                                    <span>{initials}</span>
+                                </div>
                             </div>
                         </div>
+                        <ul
+                            tabIndex={0}
+                            className="menu menu-sm dropdown-content bg-base-100  z-1 mt-3 w-52 p-2 shadow-sm border-1 border-base-300"
+                        >
+                            <li>
+                                <Link href="/users/slug">
+                                    <FaUser />
+                                    Profile
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/settings">
+                                    <FaGear />
+                                    Settings
+                                </Link>
+                            </li>
+                            <li>
+                                <SignoutButton />
+                            </li>
+                        </ul>
                     </div>
-                    <ul
-                        tabIndex={0}
-                        className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow-lg"
-                    >
-                        <li>
-                            <Link href="/users/slug">Profile</Link>
-                        </li>
-                        <li>
-                            <Link href="/settings">Settings</Link>
-                        </li>
-                        <li>
-                            <Link href="/logout">Logout</Link>
-                        </li>
-                    </ul>
-                </div>
+                ) : (
+                    <LoginButton />
+                )}
             </div>
         </div>
     );
